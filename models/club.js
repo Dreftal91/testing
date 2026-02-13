@@ -4,10 +4,13 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Club extends Model {
         static associate(models) {
-            Club.hasMany(models.Officer, {
-                foreignKey: 'clubin',
-                sourceKey: 'clubname'
-            });
+            // Only define association if Officer model exists
+            if (models.Officer) {
+                Club.hasMany(models.Officer, {
+                    foreignKey: 'clubin',
+                    sourceKey: 'clubname'
+                });
+            }
         }
     }
 
@@ -19,22 +22,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         clubname: {
             type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: {
-                    msg: "Club name cannot be empty"
-                }
-            }
+            allowNull: false
         },
         advisorfirstname: DataTypes.STRING,
         advisorlastname: DataTypes.STRING,
         meetingdate: DataTypes.STRING,
         clubroomnumber: DataTypes.STRING,
         category: DataTypes.STRING,
-        clublogo: {
-            type: DataTypes.STRING,
-            defaultValue: 'placeholder.jpg'
-        },
+        clublogo: DataTypes.STRING,
         smalldescription: DataTypes.TEXT,
         secondadvisorfirstname: DataTypes.STRING,
         secondadvisorlastname: DataTypes.STRING
@@ -42,8 +37,7 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Club',
         tableName: 'clubinfo',
-        timestamps: false,
-        freezeTableName: true // Don't pluralize table name
+        timestamps: false
     });
 
     return Club;

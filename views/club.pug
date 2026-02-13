@@ -1,95 +1,53 @@
 extends layout
 
 block content
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    body1
+    .club-detail-page
+        .club-detail-header
+            img.club-detail-logo(src=club.logo, alt=club.name + ' Logo')
 
-        div.club-content1
-            div.clubname1= club.name
-            div.tags1= ' - ' + (club.category || 'General') + ' - '
-            div.bigdescription1= club.shortDesc
-            img.club-card-header-image1(src=club.banner, alt=club.name + ' Banner')
-            p.room1= 'Meets in ' + (club.location || 'TBD')
-            p.advisor1= 'Advisor: ' + (club.advisor || 'TBD')
+            .club-detail-info
+                h1= club.name
+                .club-detail-tags= ' - ' + (club.category || 'General') + ' - '
+                p.club-detail-description= club.shortDesc
 
-            //- Social links (can be added to DB later)
-            a(href='#' target='_blank')
-                img.links1(src='https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Instagram_logo_2022.svg/1200px-Instagram_logo_2022.svg.png', alt='instagram')
-            a(href='#' target='_blank')
-                img.links1(src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2sSeQqjaUTuZ3gRgkKjidpaipF_l6s72lBw&s', alt='google')
-            div.border1
+                .club-detail-meta
+                    p= 'Meets in ' + (club.location || 'TBD')
+                    p= 'Advisor: ' + (club.advisor || 'TBD')
 
-        iframe.calender1(src="https://calendar.google.com/calendar/embed?src=en.usa%23holiday%40group.v.calendar.google.com&ctz=UTC")
+                .club-detail-social
+                    a(href='#', target='_blank')
+                        img(src='https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Instagram_logo_2022.svg/1200px-Instagram_logo_2022.svg.png', alt='Instagram')
+                    a(href='#', target='_blank')
+                        img(src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2sSeQqjaUTuZ3gRgkKjidpaipF_l6s72lBw&s', alt='Google')
 
-        div.space21
-            p.officers1 Meet the Officers
-                div.officercontent1
-                    if club.officers && club.officers !== 'No officers listed' && club.officers !== 'See details page'
-                        each officer in club.officers.split(', ')
-                            div.clubofficer-content1
-                                img.officersimage1(src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s")
-                                p.otitle1= officer
-                    else
-                        div.clubofficer-content1
-                            img.officersimage1(src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s")
-                            p.otitle1 No officers listed yet
-                    div.border21
+        .club-officers-section
+            h2 Meet the Officers
+            .club-officers-grid
+                if club.officers && club.officers !== 'No officers listed' && club.officers !== 'See details page'
+                    each officer in club.officers.split(', ')
+                        .club-officer-card
+                            img(src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s", alt="Officer")
+                            p= officer
+                else
+                    .club-officer-card
+                        img(src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s", alt="No officer")
+                        p No officers listed yet
 
-        div.club-news
-            div.club-activities
-                div.club-activities-heading
-                    h2 Club Activities
-                    h2.formShow#formShow +
-                    h2.formHide#formHide -
-                div.formNews#formNews
-                    form.news(action="#" method="post")
-                        div.input-container
-                            label(for="activity_name").form-label Name of Activity:
-                            input(type="text" name="activity_name" id="activity_name" required=true)
-                        div.input-container
-                            label(for="activity_info")
-                            textarea(name="activity_info" id="activity_info" placeholder="Activity Info..." required=true)
-                        div.form-button-row
-                            button.button(type="submit") Add Activity
-                div.activity-content
-                    p No activities listed yet. Check back soon!
+        .club-info-sections
+            .club-info-block
+                h3 What is this Activity?
+                p= club.shortDesc || 'No description available.'
 
-            div.club-opportunities
-                div.club-activities-heading
-                    h2 Club Opportunities
-                    h2.formShow#formShow2 +
-                    h2.formHide#formHide2 -
-                div.formNews#formNews2
-                    form.news(action='#' method="post")
-                        div.input-container
-                            label(for="opportunity_name").form-label Name of Opportunity:
-                            input(type="text" name="opportunity_name" id="opportunity_name" required=true)
-                        div.input-container
-                            label(for="opportunity_info")
-                            textarea(name="opportunity_info" id="opportunity_info" placeholder="Opportunity Info..." required=true)
-                        div.form-button-row
-                            button.button(type="submit") Add Opportunity
-                div.opportunities-content
-                    p No opportunities listed yet. Check back soon!
+            .club-info-block
+                h3 What makes this Activity unique?
+                p= club.shortDesc || 'Information coming soon.'
 
-        div.knowcontent1
-            h1.q1 What is this Activity?
-                p.a1= club.shortDesc || 'No description available.'
-            div.border21
+            .club-info-block
+                h3 What does a typical meeting look like?
+                p= 'Meetings are held ' + (club.meeting || 'at a time TBD') + ' in ' + (club.location || 'a location TBD') + '. Contact the advisor or officers for more details.'
 
-            div.knowcontent1
-                h1.q1 What makes this Activity unique?
-                    p.a1= club.shortDesc || 'Information coming soon.'
-                div.border21
-
-                div.knowcontent1
-                    h1.q1 What does a typical meeting look like?
-                        p.a1= 'Meetings are held ' + (club.meeting || 'at a time TBD') + ' in ' + (club.location || 'a location TBD') + '. Contact the advisor or officers for more details.'
-                    div.border21
-
-        //- Admin Actions
-        div.club-actions(style="margin: 20px; text-align: center;")
-            a.button(href="/") ← Back to All Clubs
-            a.button(href="/clubs/" + club.id + "/edit") Edit Club
+        .club-admin-actions
+            a.back-btn(href="/") ← Back to All Clubs
+            a(href="/clubs/" + club.id + "/edit") Edit Club
             form(action="/clubs/" + club.id + "/delete", method="POST", style="display: inline;")
-                button(type="submit", onclick="return confirm('Are you sure you want to delete this club?')", style="background-color: #dc3545;") Delete Club
+                button(type="submit", onclick="return confirm('Are you sure you want to delete this club?')") Delete Club
