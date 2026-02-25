@@ -133,7 +133,8 @@ router.post('/officers', async function(req, res) {
       officerstudentid: req.body.officerstudentid,
       officergradelevel: req.body.officergradelevel,
       officerusername: req.body.officerusername,
-      officerpassword: req.body.officerpassword
+      officerpassword: req.body.officerpassword,
+      officerimage: req.body.officerimage,
     });
 
     res.redirect('/');
