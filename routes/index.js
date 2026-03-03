@@ -47,7 +47,7 @@ router.get('/clubs/:id', async function(req, res, next) {
     }
 
     const officersList = club.Officers && club.Officers.length > 0
-        ? club.Officers.map(o => `${o.officertitle}: ${o.officerfirstname} ${o.officerlastname}`).join(', ')
+        ? club.Officers.map(o => `${o.officertitle}: ${o.officerfirstname} ${o.officerlastname}`).join(',  ')
         : 'No officers listed';
 
     const formattedClub = {

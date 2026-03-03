@@ -26,7 +26,7 @@ block content
                 if club.officers && club.officers !== 'No officers listed' && club.officers !== 'See details page'
                     each officer in club.officers.split(', ')
                         .club-officer-card
-                            img(src="/public/images/Edison.png", alt="Officer")
+                            img(src=officer.officerimage, alt="Officer")
                             p= officer
                 else
                     .club-officer-card
