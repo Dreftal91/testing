@@ -27,14 +27,14 @@ block content
                 if club.officers && club.officers.length > 0
                     each officer in club.officers
                         .club-officer-card
-                            img.officer-image(src=officer.image, alt=officer.name, onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s'")
+                            img.officer-image(src=officer.image, alt=officer.name, onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/960px-Default_pfp.svg.png'")
                             p.officer-name= officer.name
                             p.officer-title= officer.title
                             if officer.grade
                                 p.officer-grade= 'Grade ' + officer.grade
                 else
                     .club-officer-card
-                        img.officer-image(src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s', alt='No officer')
+                        img.officer-image(src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/960px-Default_pfp.svg.png', alt='No officer')
                         p.officer-name No officers listed yet
 
         .club-info-sections

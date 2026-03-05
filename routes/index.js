@@ -55,7 +55,7 @@ router.get('/clubs/:id', async function(req, res, next) {
       officersList = club.Officers.map(o => ({
         name: `${o.officerfirstname} ${o.officerlastname}`,
         title: o.officertitle,
-        image: o.officerimage || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s', // Default image
+        image: o.officerimage || 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/960px-Default_pfp.svg.png', // Default image
         grade: o.officergradelevel
       }));
     }
