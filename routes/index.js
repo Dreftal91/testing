@@ -36,7 +36,10 @@ router.get('/', async function(req, res, next) {
 router.get('/clubs/:id', async function(req, res, next) {
   try {
     const club = await Club.findByPk(req.params.id, {
-      include: [{ model: Officer, required: false }]
+      include: [{
+        model: Officer,
+        required: false
+      }]
     });
 
     if (!club) {
@@ -46,9 +49,16 @@ router.get('/clubs/:id', async function(req, res, next) {
       });
     }
 
-    const officersList = club.Officers && club.Officers.length > 0
-        ? club.Officers.map(o => `${o.officertitle}: ${o.officerfirstname} ${o.officerlastname}`).join(',  ')
-        : 'No officers listed';
+    // Format officers with their images
+    let officersList = [];
+    if (club.Officers && club.Officers.length > 0) {
+      officersList = club.Officers.map(o => ({
+        name: `${o.officerfirstname} ${o.officerlastname}`,
+        title: o.officertitle,
+        image: o.officerimage || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s', // Default image
+        grade: o.officergradelevel
+      }));
+    }
 
     const formattedClub = {
       id: club.id,
@@ -60,7 +70,7 @@ router.get('/clubs/:id', async function(req, res, next) {
       advisor: `${club.advisorfirstname || ''} ${club.advisorlastname || ''}`.trim(),
       secondAdvisor: club.secondadvisorfirstname ?
           `${club.secondadvisorfirstname} ${club.secondadvisorlastname || ''}`.trim() : null,
-      officers: officersList,
+      officers: officersList, // Now passing array of officer objects
       banner: club.clublogo || '/images/placeholder-banner.png',
       logo: club.clublogo || '/images/placeholder-logo.png',
       category: club.category

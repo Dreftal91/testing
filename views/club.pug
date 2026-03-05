@@ -20,18 +20,22 @@ block content
                     a(href='#', target='_blank')
                         img(src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2sSeQqjaUTuZ3gRgkKjidpaipF_l6s72lBw&s', alt='Google')
 
+        //- Officers Section with Images
         .club-officers-section
             h2 Meet the Officers
             .club-officers-grid
-                if club.officers && club.officers !== 'No officers listed' && club.officers !== 'See details page'
-                    each officer in club.officers.split(', ')
+                if club.officers && club.officers.length > 0
+                    each officer in club.officers
                         .club-officer-card
-                            img(src=officer.officerimage, alt="Officer")
-                            p= officer
+                            img.officer-image(src=officer.image, alt=officer.name, onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s'")
+                            p.officer-name= officer.name
+                            p.officer-title= officer.title
+                            if officer.grade
+                                p.officer-grade= 'Grade ' + officer.grade
                 else
                     .club-officer-card
-                        img(src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s", alt="No officer")
-                        p No officers listed yet
+                        img.officer-image(src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6I4sTak5bTNLQVa6_nBUOZQ41ASu2Kfpj8Q&s', alt='No officer')
+                        p.officer-name No officers listed yet
 
         .club-info-sections
             .club-info-block

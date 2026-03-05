@@ -4,7 +4,6 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Officer extends Model {
         static associate(models) {
-            // Only define association if Club model exists
             if (models.Club) {
                 Officer.belongsTo(models.Club, {
                     foreignKey: 'clubin',
@@ -28,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         officergradelevel: DataTypes.STRING,
         officerusername: DataTypes.STRING,
         officerpassword: DataTypes.STRING,
-        officerimage: DataTypes.STRING,
+        officerimage: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Officer',
