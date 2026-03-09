@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         clubroomnumber: DataTypes.STRING,
         category: DataTypes.STRING,
         clublogo: DataTypes.STRING,
+        clubbanner: DataTypes.STRING,
         smalldescription: DataTypes.TEXT,
         secondadvisorfirstname: DataTypes.STRING,
         secondadvisorlastname: DataTypes.STRING

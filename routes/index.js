@@ -17,7 +17,7 @@ router.get('/', async function(req, res, next) {
       commitment: 'TBD',
       advisor: `${club.advisorfirstname || ''} ${club.advisorlastname || ''}`.trim(),
       officers: 'See details page',
-      banner: club.clublogo || '/images/placeholder-banner.png',
+      banner: club.clubbanner || '/images/placeholder-banner.png',
       logo: club.clublogo || '/images/placeholder-logo.png',
       category: club.category
     }));
@@ -71,7 +71,7 @@ router.get('/clubs/:id', async function(req, res, next) {
       secondAdvisor: club.secondadvisorfirstname ?
           `${club.secondadvisorfirstname} ${club.secondadvisorlastname || ''}`.trim() : null,
       officers: officersList, // Now passing array of officer objects
-      banner: club.clublogo || '/images/placeholder-banner.png',
+      banner: club.clubbanner || '/images/placeholder-banner.png',
       logo: club.clublogo || '/images/placeholder-logo.png',
       category: club.category
     };
@@ -106,6 +106,7 @@ router.post('/clubs', async function(req, res) {
       clubroomnumber: req.body.clubroomnumber,
       category: req.body.category,
       smalldescription: req.body.smalldescription,
+      clubbanner: req.body.clubbanner || '/images/placeholder-banner.png',
       clublogo: req.body.clublogo || 'placeholder.jpg'
     });
 
@@ -182,7 +183,7 @@ router.get('/search', async function(req, res) {
         commitment: 'TBD',
         advisor: `${club.advisorfirstname || ''} ${club.advisorlastname || ''}`.trim(),
         officers: 'See details page',
-        banner: club.clublogo || '/images/placeholder-banner.png',
+        banner: club.clubbanner || '/images/placeholder-banner.png',
         logo: club.clublogo || '/images/placeholder-logo.png',
         category: club.category
       })),
@@ -215,7 +216,9 @@ router.post('/clubs/:id/edit', async function(req, res) {
       meetingdate: req.body.meetingdate,
       clubroomnumber: req.body.clubroomnumber,
       category: req.body.category,
-      smalldescription: req.body.smalldescription
+      smalldescription: req.body.smalldescription,
+      clublogo: req.body.clublogo || '/images/placeholder-logo.png',
+      clubbanner: req.body.clubbanner || '/images/placeholder-banner.png',
     }, {
       where: { id: req.params.id }
     });
