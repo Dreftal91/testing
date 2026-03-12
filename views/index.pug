@@ -23,7 +23,7 @@ block content
             h2= club.name
             p Location: #{club.location || 'TBD'}
             p Meeting: #{club.meeting}
-            p.short= club.shortDesc
+            p.short= club.shortDesc && club.shortDesc.length > 100 ? club.shortDesc.substring(0, 100) + '...' : club.shortDesc
             p Commitment: #{club.commitment || 'TBD'}
             p Advisor: #{club.advisor || 'TBD'}
             p Officers: #{club.officers || 'TBD'}

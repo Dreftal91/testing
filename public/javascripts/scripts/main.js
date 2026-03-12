@@ -56,16 +56,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            if (modalShortDesc) {
+                const truncatedDesc = club.shortDesc && club.shortDesc.length > 150
+                    ? club.shortDesc.substring(0, 150) + '...'
+                    : (club.shortDesc || 'No description available.');
+                modalShortDesc.textContent = truncatedDesc;
+            }
+
             console.log('Found club:', club); // Debug
 
-            // Populate modal with club information
+            // Populate modal with club information - WITH TRUNCATION
             if (modalName) modalName.textContent = club.name;
             if (modalMeeting) modalMeeting.textContent = `Meeting: ${club.meeting}`;
             if (modalLocation) modalLocation.textContent = `Location: ${club.location || 'TBD'}`;
             if (modalShortDesc) modalShortDesc.textContent = club.shortDesc;
             if (modalCommitment) modalCommitment.textContent = `Commitment: ${club.commitment || 'TBD'}`;
             if (modalAdvisor) modalAdvisor.textContent = `Advisor: ${club.advisor || 'TBD'}`;
-            if (modalOfficers) modalOfficers.textContent = `Officers: ${club.officers || 'TBD'}`;
+            if (modalOfficers) modalOfficers.textContent = `Officers: ${club.officers || 'See details page'}`;
 
             // Set banner image (with fallback)
             if (modalBanner) modalBanner.src = club.banner || '/images/banner-placeholder.jpg';
