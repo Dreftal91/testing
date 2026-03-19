@@ -30,10 +30,14 @@ module.exports = (sequelize, DataTypes) => {
         clubroomnumber: DataTypes.STRING,
         category: DataTypes.STRING,
         clublogo: DataTypes.STRING,
-        clubbanner: DataTypes.STRING,
         smalldescription: DataTypes.TEXT,
         secondadvisorfirstname: DataTypes.STRING,
-        secondadvisorlastname: DataTypes.STRING
+        secondadvisorlastname: DataTypes.STRING,
+        commitment: DataTypes.STRING,
+        uniquedescription: DataTypes.TEXT,
+        clubbanner: DataTypes.STRING,
+        user_id: DataTypes.INTEGER,
+        bigdescription: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Club',

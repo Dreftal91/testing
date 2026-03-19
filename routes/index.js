@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-const { Club, Officer } = require('../models');
+const { Club, Officer, User } = require('../models');
 const { Op } = require('sequelize');
 
 // GET home page - shows all clubs from database
-router.get('/', async function(req, res, next) {
+router.get('/', addUserToViews, async function(req, res, next) {
   try {
     const clubs = await Club.findAll();
 
@@ -14,12 +14,14 @@ router.get('/', async function(req, res, next) {
       meeting: club.meetingdate,
       location: club.clubroomnumber,
       shortDesc: club.smalldescription,
-      commitment: 'TBD',
+      uniqueDesc: club.uniquedescription,
+      bigDesc: club.bigdescription,
+      commitment: club.commitment,
       advisor: `${club.advisorfirstname || ''} ${club.advisorlastname || ''}`.trim(),
       officers: 'See details page',
       banner: club.clubbanner || '/images/placeholder-banner.png',
       logo: club.clublogo || '/images/placeholder-logo.png',
-      category: club.category
+      category: club.category,
     }));
 
     res.render('index', {
@@ -33,13 +35,10 @@ router.get('/', async function(req, res, next) {
 });
 
 // GET individual club page by ID
-router.get('/clubs/:id', async function(req, res, next) {
+router.get('/clubs/:id', addUserToViews, async function(req, res, next) {
   try {
     const club = await Club.findByPk(req.params.id, {
-      include: [{
-        model: Officer,
-        required: false
-      }]
+      include: [{ model: Officer, required: false }]
     });
 
     if (!club) {
@@ -66,14 +65,16 @@ router.get('/clubs/:id', async function(req, res, next) {
       meeting: club.meetingdate,
       location: club.clubroomnumber,
       shortDesc: club.smalldescription,
-      commitment: 'TBD',
+      commitment: club.commitment,
+      uniqueDesc: club.uniquedescription,
       advisor: `${club.advisorfirstname || ''} ${club.advisorlastname || ''}`.trim(),
       secondAdvisor: club.secondadvisorfirstname ?
           `${club.secondadvisorfirstname} ${club.secondadvisorlastname || ''}`.trim() : null,
-      officers: officersList, // Now passing array of officer objects
+      officers: officersList,
       banner: club.clubbanner || '/images/placeholder-banner.png',
       logo: club.clublogo || '/images/placeholder-logo.png',
-      category: club.category
+      category: club.category,
+      bigDesc: club.bigdescription,
     };
 
     res.render('club', {
@@ -86,17 +87,15 @@ router.get('/clubs/:id', async function(req, res, next) {
   }
 });
 
-// SHINE'S FORM ROUTES
-
 // GET club creation form
-router.get('/clubcreate', function(req, res) {
+router.get('/clubcreate', requireLogin, requireOfficerOrAdmin, addUserToViews, function(req, res) {
   res.render('club-create', { title: 'Create New Club' });
 });
 
-// POST new club - handles form submission
-router.post('/clubs', async function(req, res) {
+// POST new club
+router.post('/clubs', addUserToViews, async function(req, res) {
   try {
-    console.log('Form data received:', req.body); // Debug: see what data is coming in
+    console.log('Form data received:', req.body);
 
     const newClub = await Club.create({
       clubname: req.body.clubname,
@@ -106,14 +105,17 @@ router.post('/clubs', async function(req, res) {
       clubroomnumber: req.body.clubroomnumber,
       category: req.body.category,
       smalldescription: req.body.smalldescription,
+      uniquedescription: req.body.uniquedescription,
+      commitment: req.body.commitment,
+      clublogo: req.body.clublogo || 'placeholder.jpg',
       clubbanner: req.body.clubbanner || '/images/placeholder-banner.png',
-      clublogo: req.body.clublogo || 'placeholder.jpg'
+      bigdescription: req.body.bigdescription,
     });
 
-    console.log('Club created successfully:', newClub.id); // Debug: success
+    console.log('Club created successfully:', newClub.id);
     res.redirect('/clubs/' + newClub.id);
   } catch (error) {
-    console.error('FULL ERROR:', error); // Debug: see full error object
+    console.error('FULL ERROR:', error);
     console.error('Error name:', error.name);
     console.error('Error message:', error.message);
     if (error.errors) {
@@ -123,18 +125,18 @@ router.post('/clubs', async function(req, res) {
     res.render('club-create', {
       title: 'Create New Club',
       error: 'Failed to create club: ' + error.message,
-      formData: req.body // Send back the form data so user doesn't lose it
+      formData: req.body
     });
   }
 });
 
 // GET officer registration form
-router.get('/registerofficer', function(req, res) {
+router.get('/registerofficer', requireLogin, addUserToViews, function(req, res) {
   res.render('register-officer', { title: 'Register Officer' });
 });
 
 // POST new officer
-router.post('/officers', async function(req, res) {
+router.post('/officers', addUserToViews, async function(req, res) {
   try {
     await Officer.create({
       officertitle: req.body.officertitle,
@@ -143,9 +145,7 @@ router.post('/officers', async function(req, res) {
       clubin: req.body.clubin,
       officerstudentid: req.body.officerstudentid,
       officergradelevel: req.body.officergradelevel,
-      officerusername: req.body.officerusername,
-      officerpassword: req.body.officerpassword,
-      officerimage: req.body.officerimage,
+      officerimage: req.body.officerimage
     });
 
     res.redirect('/');
@@ -159,7 +159,7 @@ router.post('/officers', async function(req, res) {
 });
 
 // GET search clubs
-router.get('/search', async function(req, res) {
+router.get('/search', addUserToViews, async function(req, res) {
   try {
     const query = req.query.q;
     const clubs = await Club.findAll({
@@ -167,6 +167,8 @@ router.get('/search', async function(req, res) {
         [Op.or]: [
           { clubname: { [Op.iLike]: `%${query}%` } },
           { category: { [Op.iLike]: `%${query}%` } },
+          { commitment: { [Op.iLike]: `%${query}%` } },
+          { advisorlastname: { [Op.iLike]: `%${query}%` } },
           { smalldescription: { [Op.iLike]: `%${query}%` } }
         ]
       }
@@ -180,12 +182,14 @@ router.get('/search', async function(req, res) {
         meeting: club.meetingdate,
         location: club.clubroomnumber,
         shortDesc: club.smalldescription,
-        commitment: 'TBD',
+        commitment: club.commitment,
+        uniqueDesc: club.uniquedescription,
         advisor: `${club.advisorfirstname || ''} ${club.advisorlastname || ''}`.trim(),
         officers: 'See details page',
         banner: club.clubbanner || '/images/placeholder-banner.png',
         logo: club.clublogo || '/images/placeholder-logo.png',
-        category: club.category
+        category: club.category,
+        bigDescription: club.bigdescription,
       })),
       searchQuery: query
     });
@@ -196,7 +200,7 @@ router.get('/search', async function(req, res) {
 });
 
 // GET edit club form
-router.get('/clubs/:id/edit', async function(req, res) {
+router.get('/clubs/:id/edit', addUserToViews, async function(req, res) {
   try {
     const club = await Club.findByPk(req.params.id);
     if (!club) return res.status(404).send('Club not found');
@@ -207,7 +211,7 @@ router.get('/clubs/:id/edit', async function(req, res) {
 });
 
 // POST update club
-router.post('/clubs/:id/edit', async function(req, res) {
+router.post('/clubs/:id/edit', addUserToViews, async function(req, res) {
   try {
     await Club.update({
       clubname: req.body.clubname,
@@ -217,8 +221,11 @@ router.post('/clubs/:id/edit', async function(req, res) {
       clubroomnumber: req.body.clubroomnumber,
       category: req.body.category,
       smalldescription: req.body.smalldescription,
-      clublogo: req.body.clublogo || '/images/placeholder-logo.png',
+      commitment: req.body.commitment,
+      uniquedescription: req.body.uniquedescription,
+      clublogo: req.body.clublogo || 'placeholder.jpg',
       clubbanner: req.body.clubbanner || '/images/placeholder-banner.png',
+      bigdescription: req.body.bigdescription,
     }, {
       where: { id: req.params.id }
     });
@@ -230,7 +237,7 @@ router.post('/clubs/:id/edit', async function(req, res) {
 });
 
 // POST delete club
-router.post('/clubs/:id/delete', async function(req, res) {
+router.post('/clubs/:id/delete', addUserToViews, async function(req, res) {
   try {
     await Club.destroy({ where: { id: req.params.id } });
     res.redirect('/');
@@ -239,5 +246,93 @@ router.post('/clubs/:id/delete', async function(req, res) {
     res.send('Error deleting club');
   }
 });
+
+const md5 = require('md5');
+
+router.get('/registeruser', addUserToViews, function(req, res) {
+  res.render('register-user', { title: 'Register User' });
+});
+
+router.post('/registeruser', addUserToViews, async function (req, res) {
+  try {
+
+    const existingUser = await User.findOne({
+      where: { email: req.body.email }
+    });
+
+    if (existingUser) {
+      return res.render('register-user', {
+        title: 'Register User',
+        error: 'Email already registered'
+      });
+    }
+
+    await User.create({
+      email: req.body.email,
+      password: md5(req.body.password),
+      ufirstname: req.body.ufirstname,
+      ulastname: req.body.ulastname,
+      role: req.body.role,
+    });
+
+    res.redirect('/');
+
+  } catch (error) {
+    console.error('Error creating user:', error);
+
+    res.render('register-user', {
+      title: 'Register User',
+      error: 'Failed to register user: ' + error.message
+    });
+  }
+});
+
+const passport = require('passport');
+
+
+router.post('/login', addUserToViews, passport.authenticate('local', {
+      successRedirect: '/',
+      failureRedirect: '/login',
+      failureMessage: true
+    })
+);
+
+router.get('/login', addUserToViews, function (req, res) {
+  res.render('login', { title: 'Login User' });
+});
+
+module.exports.logout = function (req, res) {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+  });
+  res.redirect('/login');
+}
+
+router.get('/logout', addUserToViews, function(req, res) {
+  req.logout(function() {
+    res.redirect('/');
+  });
+});
+
+function addUserToViews(req, res, next) {
+  if (req.user){
+    res.locals.user = req.user;
+  }
+  next();
+}
+
+function requireLogin(req, res, next) {
+  if (!req.user) {
+    return res.redirect('/login');
+  }
+  next();
+}
+
+function requireOfficerOrAdmin(req, res, next) {
+  if (req.user.admin || req.user.officer) {
+    return next();
+  }
+  res.redirect('/');
+}
 
 module.exports = router;
