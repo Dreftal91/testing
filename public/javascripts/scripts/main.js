@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalName = document.getElementById('modal-name');
     const modalMeeting = document.getElementById('modal-meeting');
     const modalLocation = document.getElementById('modal-location');
-    const modalShortDesc = document.getElementById('modal-shortdesc');
+    const modalBigDesc = document.getElementById('modal-bigdesc');
     const modalCommitment = document.getElementById('modal-commitment');
     const modalAdvisor = document.getElementById('modal-advisor');
     const modalOfficers = document.getElementById('modal-officers');
@@ -56,11 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (modalShortDesc) {
-                const truncatedDesc = club.shortDesc && club.shortDesc.length > 150
-                    ? club.shortDesc.substring(0, 150) + '...'
-                    : (club.shortDesc || 'No description available.');
-                modalShortDesc.textContent = truncatedDesc;
+            if (modalBigDesc) {
+                const truncatedDesc = club.bigDesc && club.bigDesc.length > 150
+                    ? club.bigDesc.substring(0, 150) + '...'
+                    : (club.bigDesc || 'No description available.');
+                modalBigDesc.textContent = truncatedDesc;
             }
 
             console.log('Found club:', club); // Debug
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modalName) modalName.textContent = club.name;
             if (modalMeeting) modalMeeting.textContent = `Meeting: ${club.meeting}`;
             if (modalLocation) modalLocation.textContent = `Location: ${club.location || 'TBD'}`;
-            if (modalShortDesc) modalShortDesc.textContent = club.shortDesc;
+            if (modalBigDesc) modalBigDesc.textContent = club.bigDesc;
             if (modalCommitment) modalCommitment.textContent = `Commitment: ${club.commitment || 'TBD'}`;
             if (modalAdvisor) modalAdvisor.textContent = `Advisor: ${club.advisor || 'TBD'}`;
             if (modalOfficers) modalOfficers.textContent = `Officers: ${club.officers || 'See details page'}`;
